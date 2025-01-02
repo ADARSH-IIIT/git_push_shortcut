@@ -1,15 +1,15 @@
 #!/bin/bash
 
 # Prompt user for commit message and branch name
-read -p "Enter commit message and branch in the format 'message / branch': " input
+read -p "Enter commit message and branch in the format 'message /branch' or 'message / branch': " input
 
-# Extract message and branch name using the '==' delimiter
-commit_message=$(echo "$input" | awk -F '/' '{print $1}')
-branch_name=$(echo "$input" | awk -F '/' '{print $2}')
+# Extract message and branch name using the '/' delimiter and handle spaces
+commit_message=$(echo "$input" | sed 's|/.*||' | xargs)
+branch_name=$(echo "$input" | sed 's|.* / *||' | xargs)
 
 # Check if both message and branch name are provided
 if [ -z "$commit_message" ] || [ -z "$branch_name" ]; then
-    echo "Error: Please provide both a commit message and branch name in the format 'message  /  branch'."
+    echo "Error: Please provide both a commit message and branch name in the format 'message /branch'."
     exit 1
 fi
 
@@ -23,5 +23,3 @@ if git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
 else
     echo "Error: This is not a Git repository."
 fi
-
-
